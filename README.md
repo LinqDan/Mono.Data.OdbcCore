@@ -1,6 +1,6 @@
 Mono.Data.OdbcCore  
   
-ODBC for .Net Core is based on old version of Mono prior to Mono including parts from of .Net Reference source.  
+ODBC for .Net Core is based on old version of Mono prior to Mono including parts from the .Net Reference source.  
   
 A better implementation would be based on the .NET Framework Reference Source.  
   
@@ -8,7 +8,7 @@ Update 04/22/2017 - please see .NET Core FX repo - someone has ported Microsoft'
 https://github.com/dotnet/corefx/issues/13035  
 https://github.com/dotnet/corefx/tree/master/src/System.Data.Odbc  
   
-Update 04/23/2017 - convert Visual Studio solution/project to Visual Studio 2017 and add compiler define for libodbc.cs  
+Update 04/23/2017 - converted Visual Studio solution/project to Visual Studio 2017 and add compiler define for libodbc.cs  
   
 To enable this to work on a particular platform, define this in libodbc.cs  
   ODBC_WINDOWS to define Windows to use "odbc32.dll"   
