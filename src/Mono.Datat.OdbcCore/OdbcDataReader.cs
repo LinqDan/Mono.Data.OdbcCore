@@ -53,7 +53,7 @@ namespace System.Data.Odbc
 		private IntPtr hstmt;
 		private int _recordsAffected = -1;
 		bool disposed;
-		private DataTable _dataTableSchema;
+		//private DataTable _dataTableSchema;
 		private CommandBehavior behavior;
 
 		#endregion
@@ -661,7 +661,7 @@ namespace System.Data.Odbc
 					break;
 				case OdbcType.NText:
 				case OdbcType.NVarChar:
-					bufsize = (col.MaxLength < 127 ? (col.MaxLength*2+1) : 255);
+					bufsize = (col.MaxLength < 127 ? (col.MaxLength*2) : 255);
 					buffer = new byte[bufsize];  // According to sqlext.h, use SQL_CHAR for both char and varchar
 					StringBuilder sb = new StringBuilder ();
 					char[] charBuffer = new char[bufsize];
@@ -687,7 +687,7 @@ namespace System.Data.Odbc
 					break;
 				case OdbcType.Text:
 				case OdbcType.VarChar:
-					bufsize = (col.MaxLength < 255 ? (col.MaxLength+1) : 255);
+					bufsize = (col.MaxLength < 255 ? (col.MaxLength) : 255);
 					buffer = new byte[bufsize];  // According to sqlext.h, use SQL_CHAR for both char and varchar
 					StringBuilder sb1 = new StringBuilder ();
 					charBuffer = new char[bufsize];
@@ -846,7 +846,7 @@ namespace System.Data.Odbc
 
 			command = null;
 			cols = null;
-			_dataTableSchema = null;
+			//_dataTableSchema = null;
 			disposed = true;
 		}
 
@@ -870,7 +870,7 @@ namespace System.Data.Odbc
 				short colcount = 0;
 				libodbc.SQLNumResultCols (hstmt, ref colcount);
 				cols = new OdbcColumn [colcount];
-				_dataTableSchema = null; // force fresh creation
+				//_dataTableSchema = null; // force fresh creation
 				GetColumns ();
 			}
 			return (ret == OdbcReturn.Success);

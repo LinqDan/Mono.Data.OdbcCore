@@ -29,6 +29,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define ODBC_WINDOWS
+//#define ODBC_LINUX
+//#define ODBC_MAC
+
 using System.Data;
 using System.Data.Common;
 using System.Runtime.InteropServices;
@@ -148,65 +152,75 @@ namespace System.Data.Odbc
 		internal ulong fraction;
 	}
 
-	internal class libodbc
-	{
-		#region global constants
-		internal const int		SQL_OV_ODBC2		= 2;
-		internal const int		SQL_OV_ODBC3		= 3;
+    internal class libodbc
+    {
+        #region global constants
+        internal const int SQL_OV_ODBC2 = 2;
+        internal const int SQL_OV_ODBC3 = 3;
 
-		internal const string		SQLSTATE_RIGHT_TRUNC	= "01004";
-		internal const char		C_NULL			= '\0';
-		internal const int		SQL_NTS			= -3;
+        internal const string SQLSTATE_RIGHT_TRUNC = "01004";
+        internal const char C_NULL = '\0';
+        internal const int SQL_NTS = -3;
 
-		internal const short		SQL_TRUE		= 1;
-		internal const short		SQL_FALSE		= 0;
+        internal const short SQL_TRUE = 1;
+        internal const short SQL_FALSE = 0;
 
-		// SQLStatistics
-		internal const short		SQL_INDEX_UNIQUE	= 0;
-		internal const short		SQL_INDEX_ALL		= 1;
-		internal const short		SQL_QUICK		= 0;
-		internal const short		SQL_ENSURE		= 1;
+        // SQLStatistics
+        internal const short SQL_INDEX_UNIQUE = 0;
+        internal const short SQL_INDEX_ALL = 1;
+        internal const short SQL_QUICK = 0;
+        internal const short SQL_ENSURE = 1;
 
-		// SQLColumnAttribute
-		internal const short		SQL_NO_NULLS		= 0;
-		internal const short		SQL_NULLABLE		= 1;
-		internal const short		SQL_NULLABLE_UNKNOWN	= 2;
-		internal const short		SQL_ATTR_READONLY	= 0;
-		internal const short		SQL_ATTR_WRITE		= 1;
-		internal const short		SQL_ATTR_READWRITE_UNKNOWN = 2;
-		#endregion
+        // SQLColumnAttribute
+        internal const short SQL_NO_NULLS = 0;
+        internal const short SQL_NULLABLE = 1;
+        internal const short SQL_NULLABLE_UNKNOWN = 2;
+        internal const short SQL_ATTR_READONLY = 0;
+        internal const short SQL_ATTR_WRITE = 1;
+        internal const short SQL_ATTR_READWRITE_UNKNOWN = 2;
+        #endregion
 
-		internal static OdbcInputOutputDirection ConvertParameterDirection(
-			ParameterDirection dir)
-		{
-			switch (dir) {
-			case ParameterDirection.Input:
-				return OdbcInputOutputDirection.Input;
-			case ParameterDirection.InputOutput:
-				return OdbcInputOutputDirection.InputOutput;
-			case ParameterDirection.Output:
-				return OdbcInputOutputDirection.Output;
-			case ParameterDirection.ReturnValue:
-				return OdbcInputOutputDirection.ReturnValue;
-			default:
-				return OdbcInputOutputDirection.Input;
-			}
-		}
+        internal static OdbcInputOutputDirection ConvertParameterDirection(
+            ParameterDirection dir)
+        {
+            switch (dir) {
+                case ParameterDirection.Input:
+                    return OdbcInputOutputDirection.Input;
+                case ParameterDirection.InputOutput:
+                    return OdbcInputOutputDirection.InputOutput;
+                case ParameterDirection.Output:
+                    return OdbcInputOutputDirection.Output;
+                case ParameterDirection.ReturnValue:
+                    return OdbcInputOutputDirection.ReturnValue;
+                default:
+                    return OdbcInputOutputDirection.Input;
+            }
+        }
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+#if ODBC_WINDOWS
+        const string ODBC_DLL = "odbc32.dll";
+#elif ODBC_LINUX
+        const string ODBC_DLL = "libodbc.so";
+#elif ODBC_MAC
+        const string ODBC_DLL = "libodbc.dynlib";
+#else
+#error platform not defined
+#endif
+
+        [DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLAllocHandle (
 			OdbcHandleType HandleType,
 			IntPtr InputHandle,
 			ref IntPtr OutputHandlePtr);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLSetEnvAttr (
 			IntPtr EnvHandle,
 			OdbcEnv Attribute,
 			IntPtr Value,
 			int StringLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLConnect (
 			IntPtr ConnectionHandle,
 			string ServerName,
@@ -216,7 +230,7 @@ namespace System.Data.Odbc
 			string Authentication,
 			short NameLength3);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLDriverConnect (
 			IntPtr ConnectionHandle,
 			IntPtr WindowHandle,
@@ -227,27 +241,27 @@ namespace System.Data.Odbc
 			ref short StringLength2Ptr,
 			ushort DriverCompletion);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLExecDirect (
 			IntPtr StatementHandle,
 			string StatementText,
 			int TextLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLRowCount (
 			IntPtr StatementHandle,
 			ref int RowCount);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLNumResultCols (
 			IntPtr StatementHandle,
 			ref short ColumnCount);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLFetch (
 			IntPtr StatementHandle);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -256,7 +270,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -265,7 +279,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -274,7 +288,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -283,7 +297,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -292,7 +306,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -301,7 +315,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -310,7 +324,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetData (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -319,7 +333,7 @@ namespace System.Data.Odbc
 			int BufferLen,
 			ref int Len);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLDescribeCol (
 			IntPtr StatementHandle,
 			ushort ColumnNumber,
@@ -331,26 +345,26 @@ namespace System.Data.Odbc
 			ref short DecimalDigits,
 			ref short Nullable);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLFreeHandle (
 			ushort HandleType,
 			IntPtr SqlHandle);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLDisconnect (
 			IntPtr ConnectionHandle);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLPrepare (
 			IntPtr StatementHandle,
 			string Statement,
 			int TextLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLExecute (
 			IntPtr StatementHandle);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetConnectAttr (
 			IntPtr ConnectionHandle,
 			OdbcConnectionAttribute Attribute,
@@ -358,20 +372,20 @@ namespace System.Data.Odbc
 			int BufferLength,
 			out int StringLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLSetConnectAttr (
 			IntPtr ConnectionHandle,
 			OdbcConnectionAttribute Attribute,
 			IntPtr Value,
 			int Length);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLEndTran (
 			int HandleType,
 			IntPtr Handle,
 			short CompletionType);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLBindParameter (
 			IntPtr StatementHandle,
 			ushort ParamNum,
@@ -384,15 +398,15 @@ namespace System.Data.Odbc
 			int BufLen,
 			IntPtr StrLen);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLCancel (
 			IntPtr StatementHandle);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLCloseCursor (
 			IntPtr StatementHandle);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLError (
 			IntPtr EnvironmentHandle,
 			IntPtr ConnectionHandle,
@@ -403,7 +417,7 @@ namespace System.Data.Odbc
 			short BufferLength,
 			ref short TextLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetStmtAttr (
 			IntPtr StatementHandle,
 			int Attribute,
@@ -411,7 +425,7 @@ namespace System.Data.Odbc
 			int BufLen,
 			int StrLen);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLSetDescField (
 			IntPtr DescriptorHandle,
 			short RecNumber,
@@ -419,7 +433,7 @@ namespace System.Data.Odbc
 			byte[] Value,
 			int BufLen);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetDiagRec (
 			OdbcHandleType HandleType,
 			IntPtr Handle,
@@ -430,7 +444,7 @@ namespace System.Data.Odbc
 			short BufferLength,
 			ref short TextLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLMoreResults (
 			IntPtr Handle);
 
@@ -442,12 +456,12 @@ namespace System.Data.Odbc
 			ResetParams
 		}
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLFreeStmt (
 			IntPtr Handle,
 			SQLFreeStmtOptions option);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLGetInfo (
 			IntPtr connHandle,
 			OdbcInfo info,
@@ -455,7 +469,7 @@ namespace System.Data.Odbc
 			short buffLength,
 			ref short remainingStrLen);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLColAttribute (
 			IntPtr StmtHandle,
 			short column,
@@ -465,7 +479,7 @@ namespace System.Data.Odbc
 			ref short strLengthPtr,
 			ref int numericAttributePtr);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLPrimaryKeys (
 			IntPtr StmtHandle,
 			string catalog,
@@ -475,7 +489,7 @@ namespace System.Data.Odbc
 			string tableName,
 			short tableLength);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLStatistics (
 			IntPtr StmtHandle,
 			string catalog,
@@ -487,7 +501,7 @@ namespace System.Data.Odbc
 			short unique,
 			short Reserved);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLBindCol (
 			IntPtr StmtHandle,
 			short column,
@@ -496,7 +510,7 @@ namespace System.Data.Odbc
 			int bufferLength,
 			ref int indicator);
 
-		[DllImport ("odbc32.dll", CharSet = CharSet.Unicode)]
+		[DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
 		internal static extern OdbcReturn SQLBindCol (
 			IntPtr StmtHandle,
 			short column,

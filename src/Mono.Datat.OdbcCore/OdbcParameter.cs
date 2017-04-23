@@ -53,7 +53,7 @@ namespace System.Data.Odbc
 		ParameterDirection direction;
 		bool isNullable;
 		int size;
-		DataRowVersion sourceVersion;
+		//DataRowVersion sourceVersion;
 		string sourceColumn;
 		byte _precision;
 		byte _scale;
@@ -199,7 +199,7 @@ namespace System.Data.Odbc
 		//[OdbcDescription ("DbDataParameter_Precision")]
 		//[OdbcCategory ("DataCategory_Data")]
 		[DefaultValue (0)]
-		public byte Precision {
+		public override byte Precision {
 			get { return _precision; }
 			set { _precision = value; }
 		}
@@ -207,7 +207,7 @@ namespace System.Data.Odbc
 		//[OdbcDescription ("DbDataParameter_Scale")]
 		//[OdbcCategory ("DataCategory_Data")]
 		[DefaultValue (0)]
-		public byte Scale {
+		public override byte Scale {
 			get { return _scale; }
 			set { _scale = value; }
 		}
@@ -264,7 +264,7 @@ namespace System.Data.Odbc
 			// Convert System.Data.ParameterDirection into odbc enum
 			OdbcInputOutputDirection paramdir = libodbc.ConvertParameterDirection (this.Direction);
 
-			_cbLengthInd.EnsureAlloc (Marshal.SizeOf (typeof (int)));
+			_cbLengthInd.EnsureAlloc (Marshal.SizeOf<int>());
 			if (Value is DBNull)
 				len = (int)OdbcLengthIndicator.NullData;
 			else {
@@ -308,22 +308,22 @@ namespace System.Data.Odbc
 				else
 					return Value.ToString ().Length;
 			case OdbcType.Bit:
-				return Marshal.SizeOf (typeof (byte));
+				return Marshal.SizeOf <byte>();
 			case OdbcType.Double:
-				return Marshal.SizeOf (typeof (double));
+				return Marshal.SizeOf <double>();
 			case OdbcType.Real:
-				return Marshal.SizeOf (typeof (float));
+				return Marshal.SizeOf <float>();
 			case OdbcType.Int:
-				return Marshal.SizeOf (typeof (int));
+				return Marshal.SizeOf <int>();
 			case OdbcType.BigInt:
-				return Marshal.SizeOf (typeof (long));
+				return Marshal.SizeOf <long>();
 			case OdbcType.Decimal:
 			case OdbcType.Numeric:
 				return 19;
 			case OdbcType.SmallInt:
-				return Marshal.SizeOf (typeof (Int16));
+				return Marshal.SizeOf <Int16>();
 			case OdbcType.TinyInt:
-				return Marshal.SizeOf (typeof (byte));
+				return Marshal.SizeOf <byte>();
 			case OdbcType.Char:
 			case OdbcType.Text:
 			case OdbcType.VarChar:
@@ -346,7 +346,7 @@ namespace System.Data.Odbc
 			case OdbcType.Timestamp:
 				return 18;
 			case OdbcType.UniqueIdentifier:
-				return Marshal.SizeOf (typeof (Guid));
+				return Marshal.SizeOf <Guid>();
 			}
 
 			if (Value.GetType ().IsArray &&
