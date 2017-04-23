@@ -200,11 +200,13 @@ namespace System.Data.Odbc
 #if ODBC_WINDOWS
         const string ODBC_DLL = "odbc32.dll";
 #elif ODBC_LINUX
-        const string ODBC_DLL = "libodbc.so";
+        const string ODBC_DLL = "libiodbc.so"; // iODBC 
+        // const string ODBC_DLL = "libodbc.so"; // unixODBC
+        // popular ODBC software of Linux is iODBC and unixODBC
 #elif ODBC_MAC
-        const string ODBC_DLL = "libodbc.dynlib";
+        const string ODBC_DLL = "libiodbc.dynlib";
 #else
-#error platform not defined
+#error platform not defined libodbc
 #endif
 
         [DllImport (ODBC_DLL, CharSet = CharSet.Unicode)]
