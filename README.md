@@ -2,6 +2,13 @@ Mono.Data.OdbcCore
   
 ODBC for .Net Core is based on old version of Mono prior to Mono including parts from the .Net Reference source.  
   
+This project is abandoned.
+
+Please get System.Data.Odbc for .Net Core from here.  
+https://www.nuget.org/packages/System.Data.Odbc/
+  
+-----------------------------------------------------------  
+  
 A better implementation would be based on the .NET Framework Reference Source.  
   
 Update 04/22/2017 - please see .NET Core FX repo - someone has ported Microsoft's System.Data.Odbc to .Net Core  
